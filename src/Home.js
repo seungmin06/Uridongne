@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from 'react';
+ import React, { useState, useEffect } from 'react';
 import geoData from './data/서울_자치구_경계_2017.json';
 import geoDataa from './data/서울_행정동_경계_2017.json';
 import NEWS_components from './components/news.js'
+import KINDER_components from './components/crime.js'
 import './Home.css';
 
 function Around() {
@@ -98,7 +99,7 @@ function Around() {
 
     return (
         <div id='home'>
-            <h1 id='title'>살만한가</h1>
+            <h1 id='title'>{selectedPolygon} 살만한가</h1>
             <div id='wrap'>
 
                 <svg
@@ -176,8 +177,7 @@ function Around() {
 
 
                 <div id='chart_wrap'>
-                    {selectedPolygon && <p>선택된 지역: {selectedPolygon}</p>}
-
+                    <KINDER_components  selectedPolygon={selectedPolygon}/>
                     <NEWS_components selectedPolygon={selectedPolygon} />
 
                 </div>

@@ -35,11 +35,15 @@ const News = ({ selectedPolygon }) => {
                 articles.map(article => (
                     <div className='news_area' key={article.id}>
                         <h3 className='news_title'>{article.title}</h3>
-                        <p className='news_summary'>{article.summary}</p>
-                        <a href={article.content_url} target="_blank" rel="noopener noreferrer">
-                            <img className='news_img' src={article.image_url} alt={article.title} />
-                        </a>
+                        <div className='news_sub_area'>
+                            <a href={article.content_url} target="_blank" rel="noopener noreferrer">
+                                <img className='news_img' src={article.image_url} alt={article.title} />
+                            </a>
+                            <p className='news_summary'>{article.summary}</p>
+
+                        </div>
                         <p className='news_date'>{new Date(article.published_at).toLocaleString()}</p>
+
                     </div>
                 ))
             ) : (

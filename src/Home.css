@@ -7,6 +7,8 @@
 
 * {
     font-family: 'LeeSeoyun';
+    margin: 0;
+    padding: 0;
 }
 
 #home {
@@ -20,6 +22,8 @@
 
 #title {
     text-align: center;
+    background-color: aqua;
+    line-height: 70px;
 }
 
 
@@ -46,3 +50,9 @@ text {
 
 
 
+
+
+
+#kinder_chart {
+    width: 300px;
+}
