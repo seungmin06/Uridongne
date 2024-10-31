@@ -3,46 +3,53 @@ import { Bar } from 'react-chartjs-2';
 import { Chart, registerables } from 'chart.js';
 import { supabase } from '../supabase';
 
-// 모든 구성 요소를 등록
 Chart.register(...registerables);
 
 const App = ({ selectedPolygon }) => {
-  const [data, setData] = useState(null); // 특정 행의 데이터를 저장
-  const [labels, setLabels] = useState([]); // x축 레이블
+  const [data, setData] = useState(null);
+  const [labels, setLabels] = useState([]);
+  const [isIncreasing, setIsIncreasing] = useState(false);
+  const [trendMessage, setTrendMessage] = useState('');
 
   useEffect(() => {
     const fetchData = async () => {
       const { data: fetchedData, error } = await supabase
-        .from('uridongne_범죄율') // 테이블 이름
-        .select('*') // 모든 열을 선택
-        .eq('자치구', selectedPolygon); // 선택된 구에 해당하는 행만 선택
+        .from('uridongne_범죄율')
+        .select('*')
+        .eq('자치구', selectedPolygon);
 
       if (error) {
         console.error('Error fetching data:', error);
       } else {
-        console.log('Fetched data:', fetchedData); // 가져온 데이터 확인
+        console.log('Fetched data:', fetchedData);
         if (fetchedData.length > 0) {
-          setData(fetchedData[0]); // 첫 번째 행의 데이터 설정
-          // 모든 연도를 레이블로 설정
-          setLabels(Object.keys(fetchedData[0]).filter(key => key !== '자치구')); // '자치구'를 제외한 모든 키를 레이블로 사용
+          setData(fetchedData[0]);
+          const years = Object.keys(fetchedData[0]).filter(key => key !== '자치구');
+          setLabels(years);
+          analyzeTrend(years.map(year => parseFloat(fetchedData[0][year])));
         }
       }
     };
 
     if (selectedPolygon) {
-      fetchData(); // 선택된 구가 있을 때만 데이터 가져오기
+      fetchData();
     }
-  }, [selectedPolygon]); // selectedPolygon이 변경될 때마다 실행
+  }, [selectedPolygon]);
 
-  // y축 데이터 설정
+  const analyzeTrend = (crimeData) => {
+    const isIncreasingTrend = crimeData[crimeData.length - 1] > crimeData[0];
+    setIsIncreasing(isIncreasingTrend);
+    setTrendMessage(isIncreasingTrend ? '범죄율이 증가하는 추세입니다.' : '범죄율이 줄어드는 추세입니다.');
+  };
+
   const chartData = {
     labels: labels,
     datasets: [
       {
         label: '범죄율',
-        data: labels.map(year => data ? parseFloat(data[year]) : 0), // 모든 연도의 데이터를 사용
-        backgroundColor: 'rgba(75, 192, 192, 0.2)',
-        borderColor: 'rgba(75, 192, 192, 1)',
+        data: labels.map(year => data ? parseFloat(data[year]) : 0),
+        backgroundColor: isIncreasing ? 'rgba(54, 162, 235, 0.2)' : 'rgba(255, 99, 132, 0.2)',
+        borderColor: isIncreasing ? 'rgba(54, 162, 235, 1)' : 'rgba(255, 99, 132, 1)',
         borderWidth: 1,
       },
     ],
@@ -51,6 +58,9 @@ const App = ({ selectedPolygon }) => {
   return (
     <div id='crime_chart'>
       <Bar data={chartData} />
+      {trendMessage && (
+        <p style={{ color: isIncreasing ? 'blue' : 'red' }}>{trendMessage}</p>
+      )}
     </div>
   );
 };

@@ -1,10 +1,17 @@
- import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import geoData from './data/서울_자치구_경계_2017.json';
 import geoDataa from './data/서울_행정동_경계_2017.json';
 import NEWS_components from './components/news.js'
 import Crime_components from './components/crime.js'
 import Kindergarten_components from './components/kindergarten.js'
 import Traffic_components from './components/traffic.js'
+import Park_components from './components/park.js'
+import Population_components from './components/population.js'
+import Hospital_components from './components/hospital.js'
+import Educational_components from './components/educational.js'
+import Main_components from './components/main.js'
+
+
 import './Home.css';
 
 function Around() {
@@ -38,34 +45,16 @@ function Around() {
     const [hoveredPolygon, setHoveredPolygon] = useState(null);
     const [selectedPolygon, setSelectedPolygon] = useState(null);
 
-    const [articles, setArticles] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
 
 
 
     const today = new Date();
-    const formattedDate = today.toISOString().split('T')[0];
-    const fetchArticles = async (keyword) => {
-        try {
-            const response = await fetch(`https://api-v2.deepsearch.com/v1/articles?keyword=${encodeURIComponent(selectedPolygon)}&page_size=3&date_from=2024-01-01&date_to=${formattedDate}&api_key=87fe968f6dc34943b28a5216132cf9d3`);
-            if (!response.ok) {
-                throw new Error(`Error: ${response.status}`);
-            }
-            const data = await response.json();
-            console.log(data); // 데이터 확인
-            setArticles(data.data); // articles 데이터 저장
-        } catch (error) {
-            setError(error.message); // 에러 저장
-        } finally {
-            setLoading(false); // 로딩 상태 종료
-        }
-    };
+
 
     useEffect(() => {
         if (selectedPolygon) {
             setLoading(true);
-            fetchArticles(selectedPolygon); // 선택된 지역으로 기사 가져오기
         }
     }, [selectedPolygon]);
 
@@ -96,7 +85,6 @@ function Around() {
         setIsDragging(false);
     };
 
-    // zoom 값에 따라 사용할 데이터를 선택
     const activeGeoData = zoom >= 2 ? geoDataa : geoData;
 
     return (
@@ -139,10 +127,9 @@ function Around() {
                                 const strokeColor = isHovered ? 'rgba(255, 255, 0, 1)' : 'rgba(255, 0, 0, 0.5)';
                                 const fillColor = isHovered ? 'rgba(255, 255, 0, 1)' : 'rgba(255, 255, 255, 0)';
 
-                                // zoom 값에 따라 구명 또는 동명 표시
                                 const label = zoom >= 2
-                                    ? feature.properties.adm_nm.split(' ').slice(-1)[0] // geoDataa에서는 동명만 추출
-                                    : feature.properties.SIG_KOR_NM; // geoData에서는 구명 사용
+                                    ? feature.properties.adm_nm.split(' ').slice(-1)[0] 
+                                    : feature.properties.SIG_KOR_NM; 
 
                                 return (
                                     <g key={index}>
@@ -154,17 +141,17 @@ function Around() {
                                             fill={fillColor}
                                             onMouseEnter={() => { setHoveredPolygon(`${index}`); }}
                                             onMouseLeave={() => setHoveredPolygon(null)}
-                                            onClick={() => setSelectedPolygon(label)} // 구명 또는 동명 선택
+                                            onClick={() => setSelectedPolygon(label)}
                                         />
                                         {zoom >= 1 && (
                                             <g transform={`translate(${centerXText}, ${centerYText})`}>
                                                 <text
-                                                    fontSize={zoom >= 2 ? fontSize * 0.4 : fontSize} // zoom 값에 따라 폰트 크기 조정
+                                                    fontSize={zoom >= 2 ? fontSize * 0.4 : fontSize}
                                                     fill="black"
                                                     textAnchor="middle"
                                                     transform='scale(1, -1)'
                                                 >
-                                                    {label} {/* 구명 또는 동명 표시 */}
+                                                    {label}
                                                 </text>
                                             </g>
                                         )}
@@ -176,17 +163,19 @@ function Around() {
                     </g>
                 </svg>
 
-                <div id='info_wrap'>
-                    
-                </div>
-
                 <div id='chart_wrap'>
-                    <Crime_components  selectedPolygon={selectedPolygon}/>
-                    <Kindergarten_components  selectedPolygon={selectedPolygon}/>
-                    <Traffic_components  selectedPolygon={selectedPolygon}/>
-                    <NEWS_components selectedPolygon={selectedPolygon} />
-
+                    <Crime_components selectedPolygon={selectedPolygon} />
+                    <Kindergarten_components selectedPolygon={selectedPolygon} />
+                    <Traffic_components selectedPolygon={selectedPolygon} />
+                    <Park_components selectedPolygon={selectedPolygon} />
+                    <Population_components selectedPolygon={selectedPolygon} />
+                    <Hospital_components selectedPolygon={selectedPolygon} />
+                    <Educational_components selectedPolygon={selectedPolygon} />
+                    <Main_components selectedPolygon={selectedPolygon} />
                 </div>
+                <h1 id='news_title_'>최신 기사</h1>
+                <NEWS_components selectedPolygon={selectedPolygon} />
+
 
             </div>
 
