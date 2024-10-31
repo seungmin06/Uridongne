@@ -49,10 +49,8 @@ text {
 }
 
 
-
-
-
-
-#kinder_chart {
+#chart_wrap > div {
     width: 300px;
 }
+
+

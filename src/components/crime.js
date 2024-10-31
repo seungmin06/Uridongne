@@ -49,7 +49,7 @@ const App = ({ selectedPolygon }) => {
   };
 
   return (
-    <div id='kinder_chart'>
+    <div id='crime_chart'>
       <Bar data={chartData} />
     </div>
   );
